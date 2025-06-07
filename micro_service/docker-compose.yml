@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  microservice-app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: microservice-app
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./:/app
+    depends_on:
+      - microservice-db
+    environment:
+      - DB_HOST=${DB_HOST}
+    networks:
+      - microservice-network
+
+  microservice-nginx:
+    image: nginx:latest
+    container_name: microservice-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/app
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - microservice-app
+    networks:
+      - microservice-network
+
+  microservice-db:
+    image: mysql:8.0
+    container_name: microservice-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - microservice-mysqldata:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - microservice-network
+
+volumes:
+  microservice-mysqldata:
+
+networks:
+  microservice-network:
+    driver: bridge
