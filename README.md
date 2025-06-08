@@ -1,7 +1,7 @@
 # Разработка SSO-решения с использованием Laravel
 
 ## Описание:
-Реализация PHP SSO Server с примером микросервиса, который верифицирует пользователей по access token без обращения к SSO серверу для проверки. 
+Реализация PHP SSO Server с примером микро-сервиса, который верифицирует пользователей по access token без обращения к SSO серверу для проверки. 
 Соблюдены основные требования:
 
 > 1. SSO-сервер:  
@@ -36,15 +36,22 @@
 ## 1. Конфигурация проекта
 Скопировать .env.example в .env, заполнить переменные данными
 
-## 2. Запуск контейнеров и миграции
+## 2. Запуск контейнеров, установка зависимостей и миграции
 ```bash
 (cd laravel_php_sso && docker-compose up -d) && (cd micro_service && docker-compose up -d)
+```
+
+```bash
+(cd laravel_php_sso && docker-compose exec sso-server composer install) && (cd micro_service && docker compose exec microservice-app composer install)
+```
+
+```bash
 (cd laravel_php_sso && docker-compose exec sso-server php artisan migrate) && (cd micro_service && docker compose exec microservice-app php artisan migrate)
 ```
 
 
 ## 3. Коллекции Postman
-Для удобства проверки в корне проекта есть коллекции [documentation/Collection.postman_collection.json](documentation/Collection.postman_collection.json) для SSO Server и микросервиса
+Для удобства проверки в каталоге documentation есть Postman коллекции [documentation/Collection.postman_collection.json](documentation/Collection.postman_collection.json) для SSO Server и микросервиса
 
 ## 4. Тесты
 Feature тесты для проверки генерации access и refresh tokens, регистрации:
@@ -53,6 +60,18 @@ Feature тесты для проверки генерации access и refresh 
  ```
 
 ## 5. Примеры
+
+В запросах Register, Login, Refresh и Google происходит отправка уведомлений в NATS о выдаче access и refresh tokens.  
+
+Наблюдать за stream nats:
+```bash
+nats stream info backend --nkey ~/.nats_nkey_seed.txt -s host:4222
+```
+
+Наблюдать за topic nats:
+```bash
+nats sub 'backend.topic1' --nkey ~/.nats_nkey_seed.txt -s host:4222
+```
 
 ### 1. Register
 ![Register](/documentation/img.png)  
