@@ -28,8 +28,8 @@ class OAuthController extends Controller
             ]
         );
 
-        $accessToken = $tokenService->generateAccessToken($user);
-        $refreshToken = $tokenService->generateAndSaveRefreshToken($user->id);
+        $accessToken = $tokenService->createAccessToken($user);
+        $refreshToken = $tokenService->generateAndSaveRefreshToken($user);
 
         return response()->json([
             'access_token' => $accessToken,

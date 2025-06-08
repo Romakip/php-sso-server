@@ -26,8 +26,8 @@ class AuthController extends Controller
             'password' => Hash::make($dataUser['password']),
         ]);
 
-        $accessToken = $this->tokenService->generateAccessToken($user);
-        $refreshToken = $this->tokenService->generateAndSaveRefreshToken($user->id);
+        $accessToken = $this->tokenService->createAccessToken($user);
+        $refreshToken = $this->tokenService->generateAndSaveRefreshToken($user);
 
         return response()->json([
             'access_token' => $accessToken,
@@ -46,8 +46,8 @@ class AuthController extends Controller
             return response()->json(['error' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $accessToken = $this->tokenService->generateAccessToken($user);
-        $refreshToken = $this->tokenService->generateAndSaveRefreshToken($user->id);
+        $accessToken = $this->tokenService->createAccessToken($user);
+        $refreshToken = $this->tokenService->generateAndSaveRefreshToken($user);
 
         return response()->json([
             'access_token' => $accessToken,
@@ -72,7 +72,7 @@ class AuthController extends Controller
             return response()->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $accessToken = $this->tokenService->generateAccessToken($user);
+        $accessToken = $this->tokenService->createAccessToken($user);
 
         return response()->json([
             'access_token' => $accessToken,
